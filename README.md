@@ -1,1 +1,2 @@
-# Learn_Algorithm
+# Learning_Algorithm
+**This repository shows some algorithm snippets.**
