@@ -5,15 +5,19 @@ import time
 import logging
 from functools import wraps
 
+import pysnooper
+
 
 def run_time(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        start_time = time.clock()
+        start_time = time.process_time()
         run = func(*args, **kwargs)
-        end_time = time.clock()
-        print('{name} costs time: {time} s'.format(
-            name=func.__name__.upper(), time=str(end_time - start_time)))
+        end_time = time.process_time()
+        print(
+            '{name} costs time:'.format(name=func.__name__.upper()).rjust(
+                30, '-'),
+            str(end_time - start_time) + 's')
         return run
 
     return wrapper
@@ -33,6 +37,7 @@ def check_order(func):
     return wrapper
 
 
+# @pysnooper.snoop('results_bubble_sort.txt')
 @check_order
 @run_time
 def bubble_sort(s):
@@ -47,6 +52,7 @@ def bubble_sort(s):
     return s
 
 
+# @pysnooper.snoop('results_insertion_sort.txt')
 @check_order
 @run_time
 def insertion_sort(s):
@@ -65,9 +71,44 @@ def insertion_sort(s):
     return s
 
 
+# @pysnooper.snoop('results_merge_sort.txt')
+@check_order
+@run_time
+def merge_sort(s):
+    def _merge_sort(s):
+        def _split_to_two(sp):
+            mid = len(sp) // 2
+            return sp[:mid], sp[mid:]
+
+        def _merge_two(sp1, sp2):
+            index_1 = 0
+            index_2 = 0
+            s_m = []
+            while index_1 < len(sp1) and index_2 < len(sp2):
+                if sp1[index_1] < sp2[index_2]:
+                    s_m.append(sp1[index_1])
+                    index_1 += 1
+                else:
+                    s_m.append(sp2[index_2])
+                    index_2 += 1
+            if index_1 == len(sp1):
+                s_m += sp2[index_2:]
+            else:
+                s_m += sp1[index_1:]
+            return s_m
+
+        if len(s) == 1:
+            return s
+        if len(s) > 1:
+            sp1, sp2 = _split_to_two(s)
+            return _merge_two(_merge_sort(sp1), _merge_sort(sp2))
+
+    return _merge_sort(s)
+
+
 def main():
-    s = [random.randint(0, 1000) for i in range(10000)]
-    func_test = [bubble_sort, insertion_sort]
+    s = [random.randint(0, 1000) for i in range(5000)]
+    func_test = [bubble_sort, insertion_sort, merge_sort]
     ss = [s.copy() for i in range(len(func_test))]
     for func, s in zip(func_test, ss):
         func(s)
