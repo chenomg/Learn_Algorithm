@@ -6,6 +6,7 @@ import logging
 from functools import wraps
 
 import pysnooper
+from numba import jit, njit
 
 
 def run_time(func):
@@ -52,9 +53,26 @@ def bubble_sort(s):
     return s
 
 
+# @pysnooper.snoop('results_bubble_sort.txt')
+@check_order
+@run_time
+@jit
+def bubble_sort_jit(s):
+    if len(s) == 1:
+        return s
+    n = 0
+    while n < len(s):
+        for i in range(len(s) - 1, n, -1):
+            if s[i] < s[i - 1]:
+                s[i], s[i - 1] = s[i - 1], s[i]
+        n += 1
+    return s
+
+
 # @pysnooper.snoop('results_insertion_sort.txt')
 @check_order
 @run_time
+@jit
 def insertion_sort(s):
     lent = len(s)
     if lent == 1:
@@ -142,11 +160,12 @@ def quick_sort(s):
 
 
 def main():
-    s = [random.randint(0, 1000) for i in range(10000)]
-    func_test = [bubble_sort, insertion_sort, merge_sort, quick_sort]
+    s = [random.randint(0, 1000) for i in range(50000)]
+    func_test = [bubble_sort_jit, insertion_sort, merge_sort]
     ss = [s.copy() for i in range(len(func_test))]
     for func, s in zip(func_test, ss):
         func(s)
+    input('Press Enter to Exit!')
 
 
 if __name__ == "__main__":
