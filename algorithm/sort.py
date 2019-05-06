@@ -56,7 +56,7 @@ def bubble_sort(s):
 # @pysnooper.snoop('results_bubble_sort.txt')
 @check_order
 @run_time
-@jit
+# @jit
 def bubble_sort_jit(s):
     if len(s) == 1:
         return s
@@ -72,7 +72,7 @@ def bubble_sort_jit(s):
 # @pysnooper.snoop('results_insertion_sort.txt')
 @check_order
 @run_time
-@jit
+# @jit
 def insertion_sort(s):
     lent = len(s)
     if lent == 1:
@@ -127,6 +127,7 @@ def merge_sort(s):
 # @pysnooper.snoop('results_merge_sort.txt')
 @check_order
 @run_time
+# @jit
 def quick_sort(s):
     def _quick_sort(s):
         def _split_to_two(sp):
