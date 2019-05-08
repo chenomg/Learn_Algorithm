@@ -56,7 +56,7 @@ def bubble_sort(s):
 # @pysnooper.snoop('results_bubble_sort.txt')
 @check_order
 @run_time
-# @jit
+@jit
 def bubble_sort_jit(s):
     if len(s) == 1:
         return s
@@ -128,8 +128,8 @@ def merge_sort(s):
 @check_order
 @run_time
 def quick_sort(s):
+    # 三路快速排序
     def _quick_sort(s):
-        @jit
         def _split(sp):
             item = random.choice(sp)
             sp_l = []
@@ -161,8 +161,10 @@ def quick_sort(s):
 
 
 def main():
-    s = [random.randint(0, 1000) for i in range(500)]
-    func_test = [bubble_sort_jit, insertion_sort, merge_sort, quick_sort]
+    s = [random.randint(0, 1000) for i in range(10000)]
+    func_test = [
+        bubble_sort, bubble_sort_jit, insertion_sort, merge_sort, quick_sort
+    ]
     ss = [s.copy() for i in range(len(func_test))]
     for func, s in zip(func_test, ss):
         func(s)
