@@ -127,42 +127,42 @@ def merge_sort(s):
 # @pysnooper.snoop('results_merge_sort.txt')
 @check_order
 @run_time
-# @jit
 def quick_sort(s):
     def _quick_sort(s):
-        def _split_to_two(sp):
-            mid = len(sp) // 2
-            return sp[:mid], sp[mid:]
+        @jit
+        def _split(sp):
+            item = random.choice(sp)
+            sp_l = []
+            sp_e = []
+            sp_g = []
+            for i in sp:
+                if i < item:
+                    sp_l.append(i)
+                if i == item:
+                    sp_e.append(i)
+                if i > item:
+                    sp_g.append(i)
+            return sp_l, sp_e, sp_g
 
-        def _merge_two(sp1, sp2):
-            index_1 = 0
-            index_2 = 0
-            s_m = []
-            while index_1 < len(sp1) and index_2 < len(sp2):
-                if sp1[index_1] < sp2[index_2]:
-                    s_m.append(sp1[index_1])
-                    index_1 += 1
-                else:
-                    s_m.append(sp2[index_2])
-                    index_2 += 1
-            if index_1 == len(sp1):
-                s_m += sp2[index_2:]
-            else:
-                s_m += sp1[index_1:]
-            return s_m
+        def _merge(*ways):
+            rst = []
+            for i in ways:
+                if i:
+                    rst += i
+            return rst
 
         if len(s) == 1:
             return s
         if len(s) > 1:
-            sp1, sp2 = _split_to_two(s)
-            return _merge_two(_merge_sort(sp1), _merge_sort(sp2))
+            sps = _split(s)
+            return _merge(_quick_sort(sps[0]), sps[1], _quick_sort(sps[2]))
 
     return _quick_sort(s)
 
 
 def main():
-    s = [random.randint(0, 1000) for i in range(50000)]
-    func_test = [bubble_sort_jit, insertion_sort, merge_sort]
+    s = [random.randint(0, 1000) for i in range(500)]
+    func_test = [bubble_sort_jit, insertion_sort, merge_sort, quick_sort]
     ss = [s.copy() for i in range(len(func_test))]
     for func, s in zip(func_test, ss):
         func(s)
